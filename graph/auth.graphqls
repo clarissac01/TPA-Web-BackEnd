@@ -1,0 +1,156 @@
+scalar Time
+scalar Upload
+
+type Mutation{
+    login(username:String!, password:String!):String!
+    register(fullname:String!, username:String!, password:String!, email:String!, country:String!):String!
+    addgame(title:String!, desc:String!, price:Int!, banner:Upload!, slideshow:[Upload!]!, tag:[String!]!, developer:String!, publisher:String!, systemreq:String!, ,mature:Boolean!):String!
+    updategame(id:Int!, title:String!, desc:String!, price:Int!, banner:Upload, slideshow:[Upload], tag:[String!]!, developer:String!, publisher:String!, systemreq:String!):String!
+    deletegame(id:Int!):String!
+    addpromo(id:Int!, discount:Int!, validTo:Time!):String!
+    updatepromo(id:Int!, discount:Int!, validTo:Time!): String!
+    deletepromo(id:Int!):String!
+    setUserStatus(id:Int!): String!
+}
+
+type Query{
+    auth(token:String!): User
+    getUserProfile(id:Int!): UserProfile
+    games: [Game]
+    getGame(id:Int!): Game
+    getGameDetail(id:Int!): GameDetail
+    getGameTags(id:Int!): [GameTag]
+    getGameSlideshows(id:Int!): [GameSlideshow]
+    getPromo: [GamePromo]
+    getPromobyId(id:Int!): GamePromo
+    GameNotPromo: [Game]
+    getUserNotif(id:Int!): [UserNotif]
+    fandr: [Game]
+    faandrimg: [GameSlideshow]
+    specialOffer: [Game]
+    searchGame(keyword:String!): [Game]
+}
+
+type User{
+    id:ID!
+    fullname:String!
+    username:String!
+    password:String!
+    email:String!
+    country:String!
+    isSuspended:Boolean!
+    balance:Int!
+}
+
+type UserGame{
+    userid:Int!
+    gameid:Int!
+}
+
+type UserWishlist{
+    userid:Int!
+    gameid:Int!
+}
+
+type UserProfile{
+    userid:Int!
+    image:Int!
+    level:Int!
+    summary:String!
+    status:String!
+}
+
+type UserBadge{
+    userid:Int!
+    badge:Int!
+}
+
+type UserFriends{
+    userid:Int!
+    friendid:Int!
+}
+
+type UserNotif{
+    userid:Int!
+    newsid:Int!
+    contentType:String!
+}
+
+type UserInventory{
+    userid:Int!
+    gameid:Int!
+    itemid:Int!
+    quantity:Int!
+}
+
+type FriendRequest{
+    senderid:Int!
+    receiverid:Int!
+}
+
+type ReportUser{
+    reporteduserid:Int!
+    userwhoreportid:Int!
+    createdAt:Time!
+}
+
+type Game{
+    id:ID!
+    name:String!
+    price:Int!
+    banner:Int!
+    createdAt:Time!
+    matureContent:Boolean!
+}
+
+type GamePromo{
+    gameid:ID!
+    discount:Int!
+    validTo:Time!
+}
+
+type GameSlideshow{
+    gameid:Int!
+    link:Int!
+    contentType:String!
+}
+
+type GameItem{
+    gameid:Int!
+    itemid:ID!
+    itemname:String!
+}
+
+type GameTag{
+    gameid:ID!
+    tagname:String!
+}
+
+type GameDetail{
+    id:ID!
+    hoursplayed:Int!
+    description:String!
+    developer:String!
+    publisher:String!
+    systemrequirements:String!
+}
+
+type GameSales{
+    gameid:Int!
+    countryname:String!
+    salescount:Int!
+}
+
+type GameReview{
+    gameid:Int!
+    review:String!
+    userid:Int!
+    upvote:Int!
+    downvote:Int!
+    date:String!
+}
+
+type Files{
+    id:ID!
+    file:Upload!
+}
