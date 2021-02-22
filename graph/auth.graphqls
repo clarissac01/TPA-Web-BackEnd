@@ -29,6 +29,7 @@ type Query{
     faandrimg: [GameSlideshow]
     specialOffer: [Game]
     searchGame(keyword:String!): [Game]
+    communityrecommended: [Game]
 }
 
 type User{
@@ -148,6 +149,7 @@ type GameReview{
     upvote:Int!
     downvote:Int!
     date:String!
+    positive: Boolean!
 }
 
 type Files{

@@ -48,6 +48,7 @@ type GameReview struct {
 	Upvote   int    `json:"upvote"`
 	Downvote int    `json:"downvote"`
 	Date     string `json:"date"`
+	Positive bool   `json:"positive"`
 }
 
 type GameSales struct {

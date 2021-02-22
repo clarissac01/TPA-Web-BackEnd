@@ -89,6 +89,7 @@ type ComplexityRoot struct {
 		Date     func(childComplexity int) int
 		Downvote func(childComplexity int) int
 		Gameid   func(childComplexity int) int
+		Positive func(childComplexity int) int
 		Review   func(childComplexity int) int
 		Upvote   func(childComplexity int) int
 		Userid   func(childComplexity int) int
@@ -124,21 +125,22 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Auth              func(childComplexity int, token string) int
-		Faandrimg         func(childComplexity int) int
-		Fandr             func(childComplexity int) int
-		GameNotPromo      func(childComplexity int) int
-		Games             func(childComplexity int) int
-		GetGame           func(childComplexity int, id int) int
-		GetGameDetail     func(childComplexity int, id int) int
-		GetGameSlideshows func(childComplexity int, id int) int
-		GetGameTags       func(childComplexity int, id int) int
-		GetPromo          func(childComplexity int) int
-		GetPromobyID      func(childComplexity int, id int) int
-		GetUserNotif      func(childComplexity int, id int) int
-		GetUserProfile    func(childComplexity int, id int) int
-		SearchGame        func(childComplexity int, keyword string) int
-		SpecialOffer      func(childComplexity int) int
+		Auth                 func(childComplexity int, token string) int
+		Communityrecommended func(childComplexity int) int
+		Faandrimg            func(childComplexity int) int
+		Fandr                func(childComplexity int) int
+		GameNotPromo         func(childComplexity int) int
+		Games                func(childComplexity int) int
+		GetGame              func(childComplexity int, id int) int
+		GetGameDetail        func(childComplexity int, id int) int
+		GetGameSlideshows    func(childComplexity int, id int) int
+		GetGameTags          func(childComplexity int, id int) int
+		GetPromo             func(childComplexity int) int
+		GetPromobyID         func(childComplexity int, id int) int
+		GetUserNotif         func(childComplexity int, id int) int
+		GetUserProfile       func(childComplexity int, id int) int
+		SearchGame           func(childComplexity int, keyword string) int
+		SpecialOffer         func(childComplexity int) int
 	}
 
 	ReportUser struct {
@@ -230,6 +232,7 @@ type QueryResolver interface {
 	Faandrimg(ctx context.Context) ([]*model.GameSlideshow, error)
 	SpecialOffer(ctx context.Context) ([]*model.Game, error)
 	SearchGame(ctx context.Context, keyword string) ([]*model.Game, error)
+	Communityrecommended(ctx context.Context) ([]*model.Game, error)
 }
 
 type executableSchema struct {
@@ -421,6 +424,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.GameReview.Gameid(childComplexity), true
+
+	case "GameReview.positive":
+		if e.complexity.GameReview.Positive == nil {
+			break
+		}
+
+		return e.complexity.GameReview.Positive(childComplexity), true
 
 	case "GameReview.review":
 		if e.complexity.GameReview.Review == nil {
@@ -618,6 +628,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Auth(childComplexity, args["token"].(string)), true
+
+	case "Query.communityrecommended":
+		if e.complexity.Query.Communityrecommended == nil {
+			break
+		}
+
+		return e.complexity.Query.Communityrecommended(childComplexity), true
 
 	case "Query.faandrimg":
 		if e.complexity.Query.Faandrimg == nil {
@@ -1069,6 +1086,7 @@ type Query{
     faandrimg: [GameSlideshow]
     specialOffer: [Game]
     searchGame(keyword:String!): [Game]
+    communityrecommended: [Game]
 }
 
 type User{
@@ -1188,6 +1206,7 @@ type GameReview{
     upvote:Int!
     downvote:Int!
     date:String!
+    positive: Boolean!
 }
 
 type Files{
@@ -2748,6 +2767,41 @@ func (ec *executionContext) _GameReview_date(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _GameReview_positive(ctx context.Context, field graphql.CollectedField, obj *model.GameReview) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GameReview",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Positive, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _GameSales_gameid(ctx context.Context, field graphql.CollectedField, obj *model.GameSales) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3936,6 +3990,38 @@ func (ec *executionContext) _Query_searchGame(ctx context.Context, field graphql
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().SearchGame(rctx, args["keyword"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Game)
+	fc.Result = res
+	return ec.marshalOGame2ᚕᚖgithubᚗcomᚋclarissac01ᚋStaemᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_communityrecommended(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Communityrecommended(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6492,6 +6578,11 @@ func (ec *executionContext) _GameReview(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "positive":
+			out.Values[i] = ec._GameReview_positive(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6858,6 +6949,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_searchGame(ctx, field)
+				return res
+			})
+		case "communityrecommended":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_communityrecommended(ctx, field)
 				return res
 			})
 		case "__type":

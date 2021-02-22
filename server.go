@@ -4,8 +4,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/clarissac01/Staem/database"
+	_ "github.com/clarissac01/Staem/database"
 	"github.com/clarissac01/Staem/graph"
 	"github.com/clarissac01/Staem/graph/generated"
+	_ "github.com/clarissac01/Staem/graph/model"
 	model2 "github.com/clarissac01/Staem/graph/model"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -68,3 +70,4 @@ func GetFile(writer http.ResponseWriter, request *http.Request){
 		writer.Write(file.File)
 	}
 }
+

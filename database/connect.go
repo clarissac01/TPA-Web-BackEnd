@@ -11,13 +11,13 @@ var db *gorm.DB
 func init()  {
 	dsn := "host=localhost user=postgres password=clarissa dbname=Staem port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	//db.Migrator().DropTable(&model.User{})
+	db.Migrator().DropTable(&model.User{})
 	//db.Migrator().DropTable(&model.GamePromo{})
 	//db.Migrator().DropTable(&model.Game{})
 	//db.Migrator().DropTable(&model.GameDetail{})
 	//db.Migrator().DropTable(&model.GameTag{})
 	//db.Migrator().DropTable(&model.Files{})
-	//db.Migrator().DropTable(&model.GameSlideshow{})
+	//db.Migrator().DropTable(&model.GameReview{})
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.UserProfile{})
 	db.AutoMigrate(&model.UserNotif{})
@@ -47,14 +47,14 @@ func init()  {
 			IsSuspended: false,
 			Balance: 0,
 		},
-		//{
-		//	Fullname: "Clarissa Chuardi",
-		//	Username: "clarissa",
-		//	Password: "clarissa",
-		//	Email:    "clarissachuardi01@gmail.com",
-		//	Country:  "Indonesia",
-		//	IsSuspended: false,
-		//},
+		{
+			Fullname: "Clarissa Chuardi",
+			Username: "clarissa",
+			Password: "clarissa",
+			Email:    "clarissachuardi01@gmail.com",
+			Country:  "Indonesia",
+			IsSuspended: false,
+		},
 	})
 }
 

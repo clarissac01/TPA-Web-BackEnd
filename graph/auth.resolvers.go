@@ -341,19 +341,9 @@ func (r *queryResolver) Faandrimg(ctx context.Context) ([]*model.GameSlideshow, 
 }
 
 func (r *queryResolver) SpecialOffer(ctx context.Context) ([]*model.Game, error) {
-	var byid []*model.GamePromo
-	database.GetDB().Select("gameid").Order("discount").Find(&byid)
-	var gameids []int
-	for i := 0; i < len(byid); i++ {
-		gameids[i] = int(byid[i].Gameid)
-	}
-
 	var games []*model.Game
-	if len(gameids) == 0 {
-		return nil, nil
 
-	}
-	database.GetDB().Find(&games).Where("id = ?", gameids)
+	database.GetDB().Raw("select * from games where id in (select gameid from game_promos order by discount asc limit 12)").Find(&games)
 
 	return games, nil
 }
@@ -361,6 +351,13 @@ func (r *queryResolver) SpecialOffer(ctx context.Context) ([]*model.Game, error)
 func (r *queryResolver) SearchGame(ctx context.Context, keyword string) ([]*model.Game, error) {
 	var games []*model.Game
 	database.GetDB().Where("name LIKE ? OR name LIKE ?", "%"+strings.ToLower(keyword)+"%", "%"+strings.ToUpper(keyword)+"%").Find(&games).Limit(5)
+
+	return games, nil
+}
+
+func (r *queryResolver) Communityrecommended(ctx context.Context) ([]*model.Game, error) {
+	var games []*model.Game
+	database.GetDB().Raw("SELECT * FROM games where id in (select gameid from game_reviews where positive = 'true' group by gameid order by count(gameid) desc limit 12)").Find(&games)
 
 	return games, nil
 }
