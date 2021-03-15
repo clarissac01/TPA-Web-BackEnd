@@ -6,6 +6,24 @@ import (
 	"time"
 )
 
+type AnimatedAvatar struct {
+	Userid   int    `json:"userid"`
+	Avatarid int    `json:"avatarid"`
+	Avatar   string `json:"avatar"`
+	Price    int    `json:"Price"`
+	Active   bool   `json:"active"`
+}
+
+type Cart struct {
+	Gameid int `json:"gameid"`
+}
+
+type Country struct {
+	Countryname string  `json:"countryname"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+}
+
 type FriendRequest struct {
 	Senderid   int `json:"senderid"`
 	Receiverid int `json:"receiverid"`
@@ -20,6 +38,12 @@ type Game struct {
 	MatureContent bool      `json:"matureContent"`
 }
 
+type GameBadge struct {
+	Badgeid int    `json:"badgeid"`
+	Gameid  int    `json:"gameid"`
+	Badge   string `json:"badge"`
+}
+
 type GameDetail struct {
 	ID                 int64  `json:"id"`
 	Hoursplayed        int    `json:"hoursplayed"`
@@ -30,9 +54,11 @@ type GameDetail struct {
 }
 
 type GameItem struct {
-	Gameid   int    `json:"gameid"`
-	Itemid   int64  `json:"itemid"`
-	Itemname string `json:"itemname"`
+	Gameid  int    `json:"gameid"`
+	Itemid  int    `json:"itemid"`
+	Itemn   string `json:"itemn"`
+	Summary string `json:"summary"`
+	Name    string `json:"name"`
 }
 
 type GamePromo struct {
@@ -42,13 +68,16 @@ type GamePromo struct {
 }
 
 type GameReview struct {
-	Gameid   int    `json:"gameid"`
-	Review   string `json:"review"`
-	Userid   int    `json:"userid"`
-	Upvote   int    `json:"upvote"`
-	Downvote int    `json:"downvote"`
-	Date     string `json:"date"`
-	Positive bool   `json:"positive"`
+	Gameid      int       `json:"gameid"`
+	Review      string    `json:"review"`
+	Userid      int       `json:"userid"`
+	Upvote      int       `json:"upvote"`
+	Downvote    int       `json:"downvote"`
+	Date        time.Time `json:"date"`
+	Link        int       `json:"link"`
+	ContentType string    `json:"ContentType"`
+	Positive    bool      `json:"positive"`
+	Helpful     int       `json:"helpful"`
 }
 
 type GameSales struct {
@@ -68,10 +97,32 @@ type GameTag struct {
 	Tagname string `json:"tagname"`
 }
 
+type Market struct {
+	Sellerid int    `json:"sellerid"`
+	Itemid   int    `json:"itemid"`
+	Gameid   int    `json:"gameid"`
+	Price    int    `json:"price"`
+	Type     string `json:"type"`
+	Buyerid  int    `json:"buyerid"`
+}
+
 type ReportUser struct {
 	Reporteduserid  int       `json:"reporteduserid"`
 	Userwhoreportid int       `json:"userwhoreportid"`
 	CreatedAt       time.Time `json:"createdAt"`
+}
+
+type Transaction struct {
+	Sellerid  int       `json:"sellerid"`
+	Buyerid   int       `json:"buyerid"`
+	Price     int       `json:"price"`
+	Itemid    int       `json:"itemid"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type UnsuspensionRequest struct {
+	Userid int    `json:"userid"`
+	Status string `json:"status"`
 }
 
 type User struct {
@@ -83,11 +134,54 @@ type User struct {
 	Country     string `json:"country"`
 	IsSuspended bool   `json:"isSuspended"`
 	Balance     int    `json:"balance"`
+	Point       int    `json:"point"`
+}
+
+type UserActivities struct {
+	Userid    int       `json:"userid"`
+	Activity  string    `json:"activity"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type UserAvatar struct {
+	Userid   int  `json:"userid"`
+	Avatarid int  `json:"avatarid"`
+	Price    int  `json:"price"`
+	Active   bool `json:"active"`
+}
+
+type UserBackground struct {
+	Userid       int  `json:"userid"`
+	Backgroundid int  `json:"backgroundid"`
+	Price        int  `json:"price"`
+	Active       bool `json:"active"`
 }
 
 type UserBadge struct {
 	Userid int `json:"userid"`
+	Gameid int `json:"gameid"`
 	Badge  int `json:"badge"`
+}
+
+type UserChatSticker struct {
+	Userid      int    `json:"userid"`
+	Stickerid   int    `json:"stickerid"`
+	Chatsticker string `json:"chatsticker"`
+	Price       int    `json:"Price"`
+	Active      bool   `json:"active"`
+}
+
+type UserCode struct {
+	Userid int `json:"userid"`
+	Code   int `json:"code"`
+}
+
+type UserComment struct {
+	Gameid      int    `json:"gameid"`
+	Posterid    int    `json:"posterid"`
+	Commenterid int    `json:"commenterid"`
+	Review      string `json:"review"`
+	Comment     string `json:"comment"`
 }
 
 type UserFriends struct {
@@ -100,6 +194,12 @@ type UserGame struct {
 	Gameid int `json:"gameid"`
 }
 
+type UserGameItem struct {
+	Userid int `json:"userid"`
+	Gameid int `json:"gameid"`
+	Itemid int `json:"itemid"`
+}
+
 type UserInventory struct {
 	Userid   int `json:"userid"`
 	Gameid   int `json:"gameid"`
@@ -107,9 +207,17 @@ type UserInventory struct {
 	Quantity int `json:"quantity"`
 }
 
+type UserMiniBackground struct {
+	Userid       int  `json:"userid"`
+	Backgroundid int  `json:"backgroundid"`
+	Price        int  `json:"price"`
+	Active       bool `json:"active"`
+}
+
 type UserNotif struct {
 	Userid      int    `json:"userid"`
-	Newsid      int    `json:"newsid"`
+	Friendid    int    `json:"friendid"`
+	News        string `json:"news"`
 	ContentType string `json:"contentType"`
 }
 
@@ -121,7 +229,29 @@ type UserProfile struct {
 	Status  string `json:"status"`
 }
 
+type UserProfileComment struct {
+	Userid      int       `json:"userid"`
+	Commenterid int       `json:"commenterid"`
+	Comment     string    `json:"comment"`
+	CreatedAt   time.Time `json:"createdAt"`
+}
+
+type UserTheme struct {
+	Userid int    `json:"userid"`
+	Hex    string `json:"hex"`
+}
+
+type UserURL struct {
+	Userid int    `json:"userid"`
+	URL    string `json:"url"`
+}
+
 type UserWishlist struct {
 	Userid int `json:"userid"`
 	Gameid int `json:"gameid"`
+}
+
+type WalletCode struct {
+	Code   int `json:"code"`
+	Amount int `json:"amount"`
 }

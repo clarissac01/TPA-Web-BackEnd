@@ -30,8 +30,7 @@ func main() {
 		Debug:            true,
 	}).Handler)
 
-
-	srv := handler.New(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.New(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver()}))
 	srv.AddTransport(transport.Websocket{
 		Upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
@@ -46,7 +45,6 @@ func main() {
 	srv.AddTransport(transport.MultipartForm{})
 	srv.Use(extension.Introspection{})
 
-
 	router.Handle("/", playground.Handler("Staem", "/query"))
 	router.Handle("/query", srv)
 	// /asset/:id? -> return download file
@@ -58,16 +56,15 @@ func main() {
 	}
 }
 
-func GetFile(writer http.ResponseWriter, request *http.Request){
+func GetFile(writer http.ResponseWriter, request *http.Request) {
 	id := chi.URLParam(request, "id")
 	// query db by id
 	// w.write Files.file
 	// ntar kalo ga bisa, tambahin http header octet/stream
 
-	if s, err := strconv.ParseInt(id, 10, 64); err == nil{
+	if s, err := strconv.ParseInt(id, 10, 64); err == nil {
 		file := model2.Files{Id: int(s)}
 		database.GetDB().Find(&file)
 		writer.Write(file.File)
 	}
 }
-

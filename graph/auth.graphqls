@@ -1,16 +1,57 @@
 scalar Time
 scalar Upload
 
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION
+    | FIELD_DEFINITION
+
 type Mutation{
     login(username:String!, password:String!):String!
     register(fullname:String!, username:String!, password:String!, email:String!, country:String!):String!
     addgame(title:String!, desc:String!, price:Int!, banner:Upload!, slideshow:[Upload!]!, tag:[String!]!, developer:String!, publisher:String!, systemreq:String!, ,mature:Boolean!):String!
     updategame(id:Int!, title:String!, desc:String!, price:Int!, banner:Upload, slideshow:[Upload], tag:[String!]!, developer:String!, publisher:String!, systemreq:String!):String!
+    addreview(userid:Int!, gameid:Int!, review:String!, files:Upload, positive:Boolean!):String!
     deletegame(id:Int!):String!
     addpromo(id:Int!, discount:Int!, validTo:Time!):String!
     updatepromo(id:Int!, discount:Int!, validTo:Time!): String!
     deletepromo(id:Int!):String!
     setUserStatus(id:Int!): String!
+    addCart(gameid:Int!): String!
+    removeCart(gameid:Int!): String!
+    buyGameNotWallet(gameid: Int!, userid:Int!):String!
+    buyGameWallet(gameid: Int!, userId:Int!, price:Int!): String!
+    giftfriendNotWallet(gameid:Int!, senderid:Int!, receiverid:Int!, message:String): String!
+    giftfriendWallet(gameid:Int!, senderid:Int!, receiverid:Int!, price:Int!, message:String): String!
+    downvotereview(gameid:Int!, userid:Int!, review:String!): String!
+    upvotereview(gameid:Int!, userid:Int!, review:String!):String!
+    sendOTP(input: Int!): String!
+    addReviewComment(commenterid:Int!, posterid:Int!, review:String!, comment:String!, gameid:Int!): String!
+    unhelpful(gameid:Int!, review:String!, userid:Int!): String!
+    helpful(gameid:Int!, review:String!, userid:Int!):String!
+    updateUserProfile(userid:Int!, url:String!, fullname:String!, username:String!, summary:String!):String!
+    updateUserAvatar(userid:Int!, avatarframeid: Int!):String!
+    updateUserBackground(userid:Int!, backgroundid:Int!):String!
+    updateUserMiniBackground(userid:Int!, minibackgroundid:Int!):String!
+    updateUserAnimated(userid:Int!, avatarid:Int!):String!
+    updateUserHex(userid:Int, hex:String!):String!
+    updateWallet(userid:Int!, code:Int!):String!
+    buyChatStickers(userid:Int!, stickerid:Int!):String!
+    buyProfileBackground(userid:Int!, backgroundid:Int!):String!
+    buyMiniBackground(userid:Int!, backgroundid:Int!):String!
+    buyAvatarFrame(userid:Int!, avatarid:Int!):String!
+    buyAnimated(userid:Int!, animatedid:Int!):String!
+    addWishlist(userid:Int!, gameid:Int!):String!
+    removeWishlist(userid:Int!, gameid:Int!):String!
+    reportUser(userid:Int!, reporterid:Int!):String!
+    sendRequest(userid:Int!, receiverid:Int!):String!
+    acceptRequest(userid:Int!, senderid:Int!):String!
+    declineRequest(userid:Int!, senderid:Int!):String!
+    requestUnsuspension(userid:Int!):String!
+    acceptUnsuspension(userid:Int!):String!
+    declineUnsuspension(userid:Int!):String!
+    sellItem(userid:Int!, itemid:Int!, price:Int!):String!
+    sendMessage(userid:Int!, message:String!):String!
+    buyfromMarketDetail(sellerid:Int!, userid:Int!, price:Int!, itemid:Int!):String!
+    sellfromMarketDetail(sellerid:Int!, userid:Int!, price:Int!, itemid:Int!):String!
 }
 
 type Query{
@@ -29,7 +70,119 @@ type Query{
     faandrimg: [GameSlideshow]
     specialOffer: [Game]
     searchGame(keyword:String!): [Game]
+    searchGamePage(keyword:String!, countGame:Int!): [Game]
     communityrecommended: [Game]
+    filtergameByPrice(price:Int!, keyword:String!, countGame:Int!): [Game]
+    getGameGenre(keyword:String!): [GameTag]
+    filtergamebyGenre(genre:String!, keyword:String!, countGame:Int!): [Game]
+    filtergamebyfandr(keyword:String!, countGame:Int!): [Game]
+    filtergamebySpecialOffer(keyword:String!, countGame:Int!): [Game]
+    filtergamebyCommunityRec(keyword:String!, countGame:Int!): [Game]
+    filtergenrebyPrice(genre:String!, price:Int!, countGame:Int!): [Game]
+    getCart:[Cart]
+    getallgamefromcart:[Game]
+    getUserFriends(userid:Int!):[User]
+    getUserFriendProfiles(userId:Int!):[UserProfile]
+    getUserGames(userid:Int!): [Game]
+    getGameReview1(gameid:Int!): [GameReview]
+    getUserReview1(gameid:Int!): [User]
+    getUserReview2(gameid:Int!): [User]
+    getGameReview2(gameid:Int!): [GameReview]
+    getMedia: [GameReview]
+    getMediaGame: [Game]
+    getReviews:[GameReview]
+    getMediaCommenter(gameid:Int!, userid:Int!, review:String!):[User]
+    getMediaCommenterDetail(gameid:Int!, userid:Int!, review:String!):[UserProfile]
+    getMediaComments:[UserComment]
+    getReviewsComments:[UserComment]
+    getReviewsCommenter(gameid:Int!, userid:Int!, review:String!):[User]
+    getReviewsGame:[Game]
+    getReviewsCommenterDetail(gameid:Int!, userid:Int!, review:String!):[UserProfile]
+    getPoster(userid:Int!):User
+    getUserComment(userid:Int!):[UserProfileComment]
+    getCommentUserProfile(userid:Int!):[UserProfile]
+    getUserCommenter(userid:Int!):[User]
+    getUserUrl(userid:Int!):UserUrl
+    getUserBackground(userid:Int!):UserBackground
+    getAllUserBackground(userid:Int!):[UserBackground]
+    getAllUserMiniBackground(userid:Int!):[UserMiniBackground]
+    getUserMiniBackground(userid:Int!):UserMiniBackground
+    getUserAvatar(userid:Int!):UserAvatar
+    getAllUserAvatar(userid:Int!):[UserAvatar]
+    getUserHex(userid:Int!):UserTheme
+    getAllUserChatStickers(userid:Int!):[UserChatSticker]
+    getAllChatStickers:[UserChatSticker]
+    getAllBackground:[UserBackground]
+    getAllMiniBackground:[UserMiniBackground]
+    getAllAvatar:[UserAvatar]
+    getUserAnimated(userid:Int!):AnimatedAvatar
+    getAllUserAnimated(userid:Int!):[AnimatedAvatar]
+    getAllAnimated:[AnimatedAvatar]
+    getAllUserWishlist(userid:Int!):[Game]
+    getUserCode(userid:Int!):UserCode
+    getUserFriendCode(userid:Int!):[UserCode]
+    getPendingInvite(userid:Int!):[User]
+    getSentInvite(userid:Int!):[User]
+    getUserNotFriend(userid:Int!):[User]
+    getUserBadges(userid:Int!):[GameBadge]
+    getUserAllBadges(userid:Int!):[GameBadge]
+    getUserGamesHaveBadge(userid:Int!):[Game]
+    getAllUser:[User]
+    getAllUserProfile:[UserProfile]
+    getReportedUser:[User]
+    getReportsUser:[User]
+    getUnsuspensionRequest:[UnsuspensionRequest]
+    getUnsuspensionUser:[User]
+    getUserItem(userid:Int!):[GameItem]
+    getItemGameName(userid:Int!):[Game]
+    getItemSalesTransaction(itemid:Int!):[Transaction]
+    getMarketItem:[GameItem]
+    getMarketDetailItem(itemid:Int!):GameItem
+    salesListing(itemid:Int!, userid:Int!):[Market]
+    bidListing(itemid:Int!, userid:Int!):[Market]
+    usersalesListing(itemid:Int!, userid:Int!):[Market]
+    userbidListing(itemid:Int!, userid:Int!):[Market]
+    itemsalesinamonth(itemid:Int!):[Transaction]
+    newreleasesGames:[Game]
+    getUniqueCountry(gameid:Int!):[User]
+    getUserbyCountry(gameid:Int!):[User]
+    getAllCountry:[Country]
+    getOTP:String!
+    paginateAllGame(index:Int!):[Game]
+    paginateAllPromo(index:Int!):[Game]
+    paginateAllUser(index:Int!):[User]
+    paginateAllUserDetail(index:Int!):[UserProfile]
+    paginateAllMarketItems(index:Int!):[GameItem]
+    paginateUserInventory(userid:Int!, index:Int!):[GameItem]
+    paginateMediaCommenter(gameid:Int!, userid:Int!, review:String!, index:Int!):[User]
+    paginateMediaCommenterDetail(gameid:Int!, userid:Int!, review:String!, index:Int!):[UserProfile]
+    getAllUserActivities(userid:Int):[UserActivities]
+    paginateUserActivities(userid:Int!, index:Int!):[UserActivities]
+    recommendedgames:[Game]
+}
+
+type Cart{
+    gameid: Int!
+}
+
+type WalletCode{
+    code:Int!
+    amount:Int!
+}
+
+type UserProfileComment{
+    userid:Int!
+    commenterid:Int!
+    comment:String!
+    createdAt:Time!
+}
+
+type UserComment{
+    gameid:Int!
+    posterid:Int!
+    commenterid:Int!
+    review:String!
+    comment:String!
 }
 
 type User{
@@ -41,6 +194,13 @@ type User{
     country:String!
     isSuspended:Boolean!
     balance:Int!
+    point:Int!
+}
+
+type GameBadge{
+    badgeid:Int!
+    gameid:Int!
+    badge:String!
 }
 
 type UserGame{
@@ -63,6 +223,7 @@ type UserProfile{
 
 type UserBadge{
     userid:Int!
+    gameid:Int!
     badge:Int!
 }
 
@@ -73,7 +234,8 @@ type UserFriends{
 
 type UserNotif{
     userid:Int!
-    newsid:Int!
+    friendid: Int!
+    news:String!
     contentType:String!
 }
 
@@ -118,8 +280,10 @@ type GameSlideshow{
 
 type GameItem{
     gameid:Int!
-    itemid:ID!
-    itemname:String!
+    itemid:Int!
+    itemn:String!
+    summary:String!
+    name:String!
 }
 
 type GameTag{
@@ -148,11 +312,110 @@ type GameReview{
     userid:Int!
     upvote:Int!
     downvote:Int!
-    date:String!
+    date:Time!
+    link:Int!
+    ContentType:String!
     positive: Boolean!
+    helpful:Int!
 }
 
 type Files{
     id:ID!
     file:Upload!
+}
+
+type UserUrl{
+    userid:Int!
+    url:String!
+}
+
+type UserAvatar{
+    userid:Int!
+    avatarid:Int!
+    price:Int!
+    active:Boolean!
+}
+
+type UserBackground{
+    userid:Int!
+    backgroundid:Int!
+    price:Int!
+    active:Boolean!
+}
+
+type UserMiniBackground{
+    userid:Int!
+    backgroundid:Int!
+    price:Int!
+    active:Boolean!
+}
+
+type UserTheme{
+    userid:Int!
+    hex:String!
+}
+
+type UserChatSticker{
+    userid:Int!
+    stickerid:Int!
+    chatsticker:String!
+    Price:Int!
+    active:Boolean!
+}
+
+type AnimatedAvatar{
+    userid:Int!
+    avatarid:Int!
+    avatar:String!
+    Price:Int!
+    active:Boolean!
+}
+
+type UserCode{
+    userid:Int!
+    code:Int!
+}
+
+type UnsuspensionRequest{
+    userid:Int!
+    status:String!
+}
+
+type UserGameItem{
+    userid:Int!
+    gameid:Int!
+    itemid:Int!
+}
+
+type Market{
+    sellerid:Int!
+    itemid:Int!
+    gameid:Int!
+    price:Int!
+    type:String!
+    buyerid:Int!
+}
+
+type Transaction{
+    sellerid:Int!
+    buyerid:Int!
+    price:Int!
+    itemid:Int!
+    createdAt:Time!
+}
+
+type Subscription{
+    MessageReceived(userid:Int!):String!
+}
+
+type Country{
+    countryname:String!
+    latitude:Float!
+    longitude:Float!
+}
+
+type UserActivities{
+    userid:Int!
+    activity:String!
+    createdAt:Time!
 }
